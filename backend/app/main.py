@@ -32,7 +32,7 @@ app = FastAPI(title="Process CSV", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://csv-change-easy.netlify.app", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,6 +43,11 @@ app.add_exception_handler(VersionNotFoundError, version_not_found_handler)
 app.add_exception_handler(InvalidFileError, invalid_file_handler)
 app.add_exception_handler(AIQueryError, ai_query_handler)
 app.add_exception_handler(RateLimitError, rate_limit_handler)
+
+@app.get("/")
+async def health():
+    return {"status": "ok"}
+
 
 app.include_router(upload.router, prefix="/api")
 app.include_router(query.router, prefix="/api")
