@@ -6,15 +6,16 @@ from app.config import settings
 
 _db_path: Path | None = None
 
-# Store in backend/data/ so it's part of the deployable app
-_DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
+def _data_dir() -> Path:
+    return settings.upload_dir
 
 
 def _get_db_path() -> Path:
     global _db_path
     if _db_path is None:
-        _DATA_DIR.mkdir(parents=True, exist_ok=True)
-        _db_path = _DATA_DIR / "rate_limits.db"
+        data_dir = _data_dir()
+        data_dir.mkdir(parents=True, exist_ok=True)
+        _db_path = data_dir / "rate_limits.db"
     return _db_path
 
 
