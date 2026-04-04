@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { PreviewData } from '../types'
 import { useCsvPreview } from '../composables/useCsvPreview'
 import { useQueryHistory } from '../composables/useQueryHistory'
@@ -29,6 +29,8 @@ const {
 } = useQueryHistory()
 const { versions, isReverting, fetchVersions, revert } = useVersions()
 
+const showSidebar = ref(false)
+
 onMounted(() => {
   applyPreview(props.initialPreview)
   fetchVersions(props.sessionId)
@@ -51,6 +53,7 @@ async function handleRevert(versionId: number) {
   if (preview) {
     applyPreview(preview)
   }
+  showSidebar.value = false
 }
 
 function handlePageChange(newPage: number) {
@@ -61,25 +64,39 @@ function handlePageChange(newPage: number) {
 <template>
   <div class="h-screen flex flex-col bg-gray-50">
     <!-- Header -->
-    <header class="flex items-center justify-between px-6 py-3 bg-white border-b">
-      <div class="flex items-center gap-4">
-        <h1 class="text-lg font-bold text-gray-800">CSV Processor</h1>
+    <header class="flex items-center justify-between px-3 sm:px-6 py-3 bg-white border-b gap-2">
+      <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+        <h1 class="text-base sm:text-lg font-bold text-gray-800 whitespace-nowrap">CSV Processor</h1>
         <button
-          class="text-sm text-gray-500 hover:text-gray-700"
+          class="text-xs sm:text-sm text-gray-500 hover:text-gray-700 whitespace-nowrap"
           @click="emit('reset')"
         >
-          Upload new file
+          New file
         </button>
       </div>
-      <div class="flex items-center gap-4">
-        <AuthButton />
+      <div class="flex items-center gap-2 sm:gap-4">
+        <!-- Versions toggle (mobile only) -->
+        <button
+          class="lg:hidden text-sm text-gray-500 hover:text-gray-700 px-2 py-1 border rounded"
+          @click="showSidebar = !showSidebar"
+        >
+          Versions
+        </button>
+        <div class="hidden sm:block">
+          <AuthButton />
+        </div>
         <DownloadButton :session-id="sessionId" />
       </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden">
+    <!-- Mobile auth row -->
+    <div class="sm:hidden flex justify-end px-3 py-2 bg-white border-b">
+      <AuthButton />
+    </div>
+
+    <div class="flex flex-1 overflow-hidden relative">
       <!-- Main content -->
-      <main class="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
+      <main class="flex-1 flex flex-col p-3 sm:p-4 gap-3 sm:gap-4 overflow-y-auto">
         <CsvTable
           :columns="columns"
           :rows="rows"
@@ -120,8 +137,23 @@ function handlePageChange(newPage: number) {
         <QueryHistory :queries="queries" />
       </main>
 
+      <!-- Sidebar overlay (mobile) -->
+      <div
+        v-if="showSidebar"
+        class="lg:hidden fixed inset-0 bg-black/30 z-40"
+        @click="showSidebar = false"
+      />
+
       <!-- Sidebar -->
-      <aside class="w-72 border-l bg-white p-4 overflow-y-auto">
+      <aside
+        class="bg-white border-l overflow-y-auto z-50 transition-transform duration-200
+          fixed right-0 top-0 h-full w-72 p-4 lg:relative lg:translate-x-0 lg:block"
+        :class="showSidebar ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
+      >
+        <div class="lg:hidden flex justify-between items-center mb-4">
+          <h3 class="text-sm font-semibold text-gray-700">Versions</h3>
+          <button class="text-gray-400 hover:text-gray-600 text-lg" @click="showSidebar = false">&times;</button>
+        </div>
         <VersionSidebar
           :versions="versions"
           :is-reverting="isReverting"
