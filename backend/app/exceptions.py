@@ -27,6 +27,12 @@ class AIQueryError(Exception):
         super().__init__(reason)
 
 
+class RateLimitError(Exception):
+    def __init__(self, reason: str):
+        self.reason = reason
+        super().__init__(reason)
+
+
 async def session_not_found_handler(_request: Request, exc: SessionNotFoundError) -> JSONResponse:
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
@@ -41,3 +47,7 @@ async def invalid_file_handler(_request: Request, exc: InvalidFileError) -> JSON
 
 async def ai_query_handler(_request: Request, exc: AIQueryError) -> JSONResponse:
     return JSONResponse(status_code=422, content={"detail": exc.reason})
+
+
+async def rate_limit_handler(_request: Request, exc: RateLimitError) -> JSONResponse:
+    return JSONResponse(status_code=429, content={"detail": exc.reason})
