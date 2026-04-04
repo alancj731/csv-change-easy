@@ -4,7 +4,7 @@ import { useAuth } from '../composables/useAuth'
 
 const { user, isAuthLoading, authError, loginWithGoogle, loginWithEmail, registerWithEmail, logout } = useAuth()
 
-const showEmailForm = ref(false)
+const showDropdown = ref(false)
 const isRegisterMode = ref(false)
 const email = ref('')
 const password = ref('')
@@ -17,7 +17,7 @@ async function handleEmailSubmit() {
     await loginWithEmail(email.value, password.value)
   }
   if (!authError.value) {
-    showEmailForm.value = false
+    showDropdown.value = false
     email.value = ''
     password.value = ''
   }
@@ -27,79 +27,88 @@ function toggleMode() {
   isRegisterMode.value = !isRegisterMode.value
   authError.value = null
 }
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value
+  authError.value = null
+}
 </script>
 
 <template>
-  <div class="flex items-center gap-3">
-    <template v-if="isAuthLoading">
-      <span class="text-sm text-gray-400">Loading...</span>
-    </template>
+  <div class="relative">
+    <!-- Loading -->
+    <div v-if="isAuthLoading" class="h-9 w-24 bg-slate-100 rounded-lg animate-pulse" />
 
-    <template v-else-if="user">
-      <span class="text-sm text-gray-600">{{ user.email }}</span>
-      <span class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded">50MB limit</span>
+    <!-- Logged in -->
+    <div v-else-if="user" class="flex items-center gap-3">
+      <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-full pl-3 pr-1 py-1">
+        <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+          <span class="text-xs font-medium text-blue-600">{{ (user.email || '?')[0].toUpperCase() }}</span>
+        </div>
+        <span class="text-sm text-slate-600 max-w-[160px] truncate">{{ user.email }}</span>
+        <button
+          class="text-xs text-slate-400 hover:text-slate-600 px-2 py-1 rounded-full hover:bg-slate-100 transition-colors"
+          @click="logout"
+        >
+          Sign out
+        </button>
+      </div>
+    </div>
+
+    <!-- Not logged in -->
+    <div v-else class="flex items-center gap-2">
       <button
-        class="text-sm text-gray-500 hover:text-gray-700"
-        @click="logout"
+        class="text-sm text-slate-600 hover:text-slate-800 px-3 py-2 rounded-lg hover:bg-white/60 transition-colors"
+        @click="toggleDropdown"
       >
-        Logout
+        Sign in
       </button>
-    </template>
-
-    <template v-else>
-      <span class="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded">1MB limit</span>
-
       <button
-        class="text-sm px-3 py-1 bg-white border rounded hover:bg-gray-50 transition-colors"
+        class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors shadow-sm"
         @click="loginWithGoogle"
       >
         Sign in with Google
       </button>
+    </div>
 
-      <button
-        class="text-sm text-blue-600 hover:text-blue-800"
-        @click="showEmailForm = !showEmailForm"
-      >
-        {{ showEmailForm ? 'Cancel' : 'Email' }}
-      </button>
-    </template>
-  </div>
-
-  <!-- Email/password dropdown form -->
-  <div
-    v-if="!user && showEmailForm"
-    class="absolute right-4 top-14 z-50 bg-white border rounded-lg shadow-lg p-4 w-72"
-  >
-    <form class="space-y-3" @submit.prevent="handleEmailSubmit">
-      <h3 class="text-sm font-medium text-gray-700">
-        {{ isRegisterMode ? 'Create Account' : 'Sign In' }}
-      </h3>
-      <input
-        v-model="email"
-        type="email"
-        placeholder="Email"
-        class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Password"
-        class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button
-        type="submit"
-        class="w-full py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
-      >
-        {{ isRegisterMode ? 'Register' : 'Sign In' }}
-      </button>
-      <button
-        type="button"
-        class="w-full text-xs text-gray-500 hover:text-gray-700"
-        @click="toggleMode"
-      >
-        {{ isRegisterMode ? 'Already have an account? Sign in' : "Don't have an account? Register" }}
-      </button>
-      <p v-if="authError" class="text-xs text-red-600">{{ authError }}</p>
-    </form>
+    <!-- Email dropdown -->
+    <div
+      v-if="!user && showDropdown"
+      class="absolute right-0 top-12 z-50 bg-white border border-slate-200 rounded-xl shadow-xl p-5 w-80"
+    >
+      <form class="space-y-3" @submit.prevent="handleEmailSubmit">
+        <h3 class="text-sm font-semibold text-slate-800">
+          {{ isRegisterMode ? 'Create account' : 'Sign in with email' }}
+        </h3>
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Email address"
+          class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Password"
+          class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        <button
+          type="submit"
+          class="w-full py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          {{ isRegisterMode ? 'Create account' : 'Sign in' }}
+        </button>
+        <p class="text-center">
+          <button
+            type="button"
+            class="text-xs text-slate-400 hover:text-blue-600 transition-colors"
+            @click="toggleMode"
+          >
+            {{ isRegisterMode ? 'Already have an account? Sign in' : "Don't have an account? Register" }}
+          </button>
+        </p>
+        <p v-if="authError" class="text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2">{{ authError }}</p>
+      </form>
+    </div>
   </div>
 </template>
