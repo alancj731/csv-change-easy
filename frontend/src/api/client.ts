@@ -11,7 +11,7 @@ import type {
 import { auth } from '../firebase'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
 })
 
 api.interceptors.request.use(async (config) => {
@@ -85,5 +85,6 @@ export async function revertToVersion(
 }
 
 export function getDownloadUrl(sessionId: string): string {
-  return `/api/sessions/${sessionId}/download`
+  const base = import.meta.env.VITE_API_URL || '/api'
+  return `${base}/sessions/${sessionId}/download`
 }
