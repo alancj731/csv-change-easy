@@ -11,7 +11,7 @@ Upload a CSV, describe what you want in plain English (e.g. "remove rows where a
 - **Version history** — every change creates a version, revert to any previous state
 - **Analysis queries** — ask questions about your data without modifying it
 - **Authentication** — Firebase auth (Google + email/password)
-- **Rate limiting** — anonymous: 1MB upload / 3 queries per day; authenticated: 50MB / 10 per day
+- **Rate limiting** — anonymous: 1MB upload / 3 queries per day; authenticated: 4MB / 10 per day
 
 ## Tech Stack
 

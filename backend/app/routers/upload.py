@@ -27,6 +27,7 @@ async def upload_csv(
                 f"File too large: {size_mb:.1f}MB. "
                 f"Anonymous users are limited to {max_size}MB. "
                 f"Sign in to upload files up to  {settings.max_file_size_mb} MB."
+                f"Email to winnipegdatafan@gmail.com for uploading even larger file."
             )
     else:
         max_size = settings.max_file_size_mb

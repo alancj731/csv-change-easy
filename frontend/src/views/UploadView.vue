@@ -99,7 +99,7 @@ const emit = defineEmits<{
         <!-- Limit info -->
         <p class="mt-8 sm:mt-10 text-center text-xs text-slate-400 pb-6">
           <template v-if="user">
-            Signed in &middot; 50MB per file &middot; 10 conversions/day &middot;
+            Signed in &middot; 4MB per file &middot; 10 conversions/day &middot;
             Need more? Contact <a href="mailto:winnipegdatafan@gmail.com" class="text-blue-500 hover:underline">winnipegdatafan@gmail.com</a>
           </template>
           <template v-else>
