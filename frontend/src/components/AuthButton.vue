@@ -45,7 +45,7 @@ function toggleDropdown() {
         <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
           <span class="text-xs font-medium text-blue-600">{{ (user.email || '?')[0].toUpperCase() }}</span>
         </div>
-        <span class="text-sm text-slate-600 max-w-[100px] sm:max-w-[160px] truncate hidden xs:inline">{{ user.email }}</span>
+        <span class="text-sm text-slate-600 max-w-[120px] sm:max-w-[200px] truncate">{{ user.email }}</span>
         <button
           class="text-xs text-slate-400 hover:text-slate-600 px-2 py-1 rounded-full hover:bg-slate-100 transition-colors whitespace-nowrap"
           @click="logout"
