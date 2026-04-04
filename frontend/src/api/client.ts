@@ -8,8 +8,19 @@ import type {
   VersionListResponse,
 } from '../types'
 
+import { auth } from '../firebase'
+
 const api = axios.create({
   baseURL: '/api',
+})
+
+api.interceptors.request.use(async (config) => {
+  const currentUser = auth.currentUser
+  if (currentUser) {
+    const token = await currentUser.getIdToken()
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
 export async function uploadCsv(file: File): Promise<UploadResponse> {

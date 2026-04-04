@@ -11,6 +11,7 @@ import AnalysisResult from '../components/AnalysisResult.vue'
 import QueryHistory from '../components/QueryHistory.vue'
 import VersionSidebar from '../components/VersionSidebar.vue'
 import DownloadButton from '../components/DownloadButton.vue'
+import AuthButton from '../components/AuthButton.vue'
 
 const props = defineProps<{
   sessionId: string
@@ -70,7 +71,10 @@ function handlePageChange(newPage: number) {
           Upload new file
         </button>
       </div>
-      <DownloadButton :session-id="sessionId" />
+      <div class="flex items-center gap-4">
+        <AuthButton />
+        <DownloadButton :session-id="sessionId" />
+      </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
