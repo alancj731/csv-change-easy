@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     max_file_size_mb: int = 50
     max_file_size_mb_anonymous: int = 1
     anonymous_daily_limit: int = 3
-    authenticated_daily_limit: int = 4
+    authenticated_daily_limit: int = 6
     contact_email: str = "winnipegdatafan@gmail.com"
     session_ttl_hours: int = 24
     preview_page_size: int = 50
