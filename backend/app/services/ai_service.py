@@ -1,6 +1,7 @@
 import re
 from io import StringIO
 
+import httpx
 import pandas as pd
 
 from app.config import settings
@@ -88,33 +89,45 @@ def _run_generated_code(code: str, df: pd.DataFrame) -> dict:
 
 
 def generate_code(df: pd.DataFrame, query: str) -> str:
-    """Generate pandas code from natural language query using Gemini."""
+    """Generate pandas code from natural language query using DeepSeek."""
     _validate_query(query)
 
-    if not settings.gemini_api_key:
-        raise AIQueryError("Gemini API key not configured. Set GEMINI_API_KEY in .env")
+    if not settings.deepseek_api_key:
+        raise AIQueryError("DeepSeek API key not configured. Set DEEPSEEK_API_KEY in .env")
 
     try:
-        from google import genai
-
-        client = genai.Client(api_key=settings.gemini_api_key)
-        response = client.models.generate_content(
-            model=settings.gemini_model,
-            contents=_build_prompt(df, query),
-            config=genai.types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                temperature=0,
-            ),
+        response = httpx.post(
+            f"{settings.deepseek_base_url.rstrip('/')}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {settings.deepseek_api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": settings.deepseek_model,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": _build_prompt(df, query)},
+                ],
+                "temperature": 0,
+                "stream": False,
+                "thinking": {"type": "disabled"},
+            },
+            timeout=60,
         )
+        response.raise_for_status()
+        data = response.json()
+        code = data["choices"][0]["message"]["content"].strip()
 
-        code = response.text.strip()
         if code.startswith("```"):
             code = re.sub(r"^```(?:python)?\n?", "", code)
             code = re.sub(r"\n?```$", "", code)
             code = code.strip()
 
+    except httpx.HTTPStatusError as e:
+        detail = e.response.text
+        raise AIQueryError(f"DeepSeek API call failed: {e.response.status_code} {detail}") from e
     except Exception as e:
-        raise AIQueryError(f"Gemini API call failed: {e}") from e
+        raise AIQueryError(f"DeepSeek API call failed: {e}") from e
 
     _validate_generated_code(code)
     return code

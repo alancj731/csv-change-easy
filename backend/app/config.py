@@ -4,8 +4,9 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    deepseek_api_key: str = ""
+    deepseek_model: str = "deepseek-v4-flash"
+    deepseek_base_url: str = "https://api.deepseek.com"
     firebase_project_id: str = ""
     upload_dir: Path = Path("/tmp/process-csv-sessions")
     max_file_size_mb: int = 50
@@ -14,7 +15,6 @@ class Settings(BaseSettings):
     authenticated_daily_limit: int = 4
     contact_email: str = "winnipegdatafan@gmail.com"
     session_ttl_hours: int = 24
-    pandasai_timeout_seconds: int = 30
     preview_page_size: int = 50
     max_versions_per_session: int = 50
 
