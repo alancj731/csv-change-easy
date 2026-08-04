@@ -1,6 +1,6 @@
 # CSV Processor
 
-A web app that lets you transform CSV files using natural language. Powered by Google Gemini AI.
+A web app that lets you transform CSV files using natural language. Powered by DeepSeek AI.
 
 Upload a CSV, describe what you want in plain English (e.g. "remove rows where age < 18"), review the generated pandas code, edit if needed, and download the result.
 
@@ -17,7 +17,7 @@ Upload a CSV, describe what you want in plain English (e.g. "remove rows where a
 
 - **Frontend**: Vue 3 + TypeScript + Vite + Tailwind CSS
 - **Backend**: FastAPI (Python)
-- **AI**: Google Gemini API (generates pandas code from natural language)
+- **AI**: DeepSeek API (generates pandas code from natural language)
 - **Auth**: Firebase Authentication
 - **Rate limiting**: SQLite
 
@@ -26,7 +26,7 @@ Upload a CSV, describe what you want in plain English (e.g. "remove rows where a
 - Python 3.11+
 - Node.js 18+
 - [uv](https://docs.astral.sh/uv/) (Python package manager)
-- Google Gemini API key
+- DeepSeek API key
 - Firebase project (for authentication)
 
 ## Setup
@@ -45,7 +45,7 @@ Or manually:
 # Backend
 cd backend
 uv venv .venv
-uv pip install fastapi "uvicorn[standard]" python-multipart pandas pydantic-settings google-genai firebase-admin pytest pytest-asyncio httpx PyJWT cryptography
+uv pip install -e ".[dev]"
 cd ..
 
 # Frontend
@@ -58,12 +58,13 @@ npm install
 **Backend** — create `backend/.env`:
 
 ```env
-GEMINI_API_KEY=your-gemini-api-key
-GEMINI_MODEL=gemini-2.5-flash
+DEEPSEEK_API_KEY=your-deepseek-api-key
+DEEPSEEK_MODEL=deepseek-v4-flash
+DEEPSEEK_BASE_URL=https://api.deepseek.com
 FIREBASE_PROJECT_ID=your-firebase-project-id
 ```
 
-Get your Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
+Get your DeepSeek API key from the DeepSeek platform.
 
 **Frontend** — create `frontend/.env`:
 
@@ -146,7 +147,7 @@ process-csv/
 │   │   │   ├── versions.py      # GET versions, POST revert
 │   │   │   └── download.py      # GET /api/sessions/{id}/download
 │   │   └── services/
-│   │       ├── ai_service.py    # Gemini code generation + sandboxed execution
+│   │       ├── ai_service.py    # DeepSeek code generation + sandboxed execution
 │   │       ├── auth_service.py  # Firebase token verification (no service account needed)
 │   │       ├── csv_service.py   # CSV read/write/preview
 │   │       ├── rate_limiter.py  # SQLite-based rate limiting

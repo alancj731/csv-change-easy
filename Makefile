@@ -1,7 +1,7 @@
 .PHONY: dev dev-backend dev-frontend install install-backend install-frontend
 
 install-backend:
-	cd backend && uv venv .venv --clear && uv pip install setuptools scipy && uv pip install fastapi "uvicorn[standard]" python-multipart pandas pydantic-settings pandasai pytest pytest-asyncio httpx
+	cd backend && uv venv .venv --clear && uv pip install -e ".[dev]"
 
 install-frontend:
 	cd frontend && npm install
